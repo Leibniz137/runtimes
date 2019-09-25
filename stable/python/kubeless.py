@@ -49,6 +49,11 @@ def metrics():
     bottle.response.content_type = prom.CONTENT_TYPE_LATEST
     return prom.generate_latest(prom.REGISTRY)
 
+  
+@bottle.error(500)
+def print_exception(error):
+    return str(error)
+
 
 @app.route('/<:re:.*>', method=['GET', 'POST', 'PATCH', 'DELETE'])
 def handler():
@@ -83,7 +88,7 @@ def handler():
             else:
                 res = q.get()
                 if isinstance(res, Exception):
-                    raise res
+                    return bottle.HTTPError(500, str(res))
                 return res
 
 
